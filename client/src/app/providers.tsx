@@ -10,7 +10,6 @@ const Providers = ({ children }: { children: React.ReactNode }) => {
       <Authenticator.Provider>
         <Auth>{children}</Auth>
       </Authenticator.Provider>
-      {children}
     </StoreProvider>
   );
 };
