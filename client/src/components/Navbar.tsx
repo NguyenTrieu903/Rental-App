@@ -28,7 +28,7 @@ const Navbar = () => {
                 />
                 <div className="text-xl font-bold">
                   RENT
-                  <span className="font-light text-rose-400 hover:!text-primary-300">
+                  <span className="text-secondary-500 font-light hover:!text-primary-300">
                     IFUL
                   </span>
                 </div>
@@ -41,8 +41,8 @@ const Navbar = () => {
           <div className="flex items-center gap-5">
             <Link href="/signin">
               <Button
-                variant="ghost"
-                className="text-white border border-white hover:bg-white hover:text-emerald-950 rounded-lg transition-colors duration-300 cursor-pointer"
+                variant="outline"
+                className="text-white border-white bg-transparent hover:bg-white hover:text-primary-700 rounded-lg cursor-pointer"
               >
                 Sign In
               </Button>
@@ -50,7 +50,7 @@ const Navbar = () => {
             <Link href="/signup">
               <Button
                 variant="secondary"
-                className="text-white bg-rose-400 hover:bg-white hover:text-rose-400 rounded-lg cursor-pointer"
+                className="text-white bg-secondary-600 hover:bg-white hover:text-primary-700 rounded-lg cursor-pointer"
               >
                 Sign Up
               </Button>
