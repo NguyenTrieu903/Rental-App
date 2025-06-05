@@ -75,7 +75,7 @@ export const createNewUserInDatabase = async (
       phoneNumber: "",
     },
   });
-
+  console.log("createUserResponse", createUserResponse);
   if (createUserResponse.error) {
     throw new Error("Failed to create user record");
   }

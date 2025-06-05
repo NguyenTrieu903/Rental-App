@@ -1,10 +1,9 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect } from "react";
 import { Amplify } from "aws-amplify";
 
 import {
   Authenticator,
   Heading,
-  Placeholder,
   Radio,
   RadioGroupField,
   useAuthenticator,
