@@ -1,12 +1,19 @@
+import { Manager, Tenant } from "@/types/prismaTypes";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { fetchAuthSession, getCurrentUser } from "aws-amplify/auth";
-import { StringValidation } from "zod";
 
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl:
       process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:3000/api",
+    prepareHeaders: async (headers) => {
+      const session = await fetchAuthSession();
+      const { idToken } = session.tokens ?? {};
+      if (idToken) {
+        headers.set("Authorization", `Bearer ${idToken}`);
+      }
+    },
   }),
   tagTypes: [],
   endpoints: (build) => ({
@@ -23,9 +30,21 @@ export const api = createApi({
               ? `/managers/${user.userId}`
               : `/tenants/${user.userId}`;
           let userDetailsResponse = await fetchWithBQ(endpoint);
-        } catch (error) {}
+
+          // if user doesn't exist, create new user
+          return {
+            data: {
+              cognitoInfo: { ...user },
+              userInfo: userDetailsResponse.data as Tenant | Manager,
+              userRole,
+            },
+          };
+        } catch (error: any) {
+          return { error: error.message || "Could not fetch user details" };
+        }
       },
     }),
   }),
 });
+
 export const {} = api;

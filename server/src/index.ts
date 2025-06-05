@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
+import { authMiddleware } from "./middleware/authMiddleware";
 
 /*CONFIGURATION */
 dotenv.config();
@@ -18,6 +19,10 @@ app.use(cors());
 
 /* ROUTES */
 app.get("/", (req, res) => {
+  res.send("Welcome to the server!");
+});
+
+app.use("/tenants", authMiddleware(["tenants"]), (req, res) => {
   res.send("Welcome to the server!");
 });
 
