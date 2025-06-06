@@ -1,10 +1,9 @@
-import React, { use, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Amplify } from "aws-amplify";
 
 import {
   Authenticator,
   Heading,
-  Placeholder,
   Radio,
   RadioGroupField,
   useAuthenticator,
@@ -12,136 +11,97 @@ import {
 } from "@aws-amplify/ui-react";
 import "@aws-amplify/ui-react/styles.css";
 import { useRouter, usePathname } from "next/navigation";
+import { amplifyConfig } from "@/configuration/amplifyConfig";
+import { authFormFields } from "@/utils/authFormFields";
 
-// https://docs.amplify.aws/gen1/javascript/tools/libraries/configure-categories/
-Amplify.configure({
-  Auth: {
-    Cognito: {
-      userPoolClientId:
-        process.env.NEXT_PUBLIC_AWS_CONGNITO_USER_POOL_CLIENT_ID || "",
-      userPoolId: process.env.NEXT_PUBLIC_AWS_CONGNITO_USER_POOL_ID || "",
-    },
-  },
-});
+Amplify.configure(amplifyConfig);
 
-const components = {
-  Header() {
-    return (
-      <View className="mt-4 mb-7">
-        <Heading level={3} className="!text-2xl !font-bold">
-          RENT
-          <span className="text-secondary-500 font-light hover:!text-primary-300">
-            IFUL
-          </span>
-        </Heading>
-        <p className="text-muted-foreground mt-2">
-          <span className="font-bold">Welcome!</span> Please sign in to continue
-        </p>
-      </View>
-    );
-  },
-  SignIn: {
-    Footer() {
-      const { toSignUp } = useAuthenticator();
-      return (
-        <View className="text-center mt-4">
-          <p className="text-muted-foreground">
-            Don&apos;t have an account?{" "}
-            <button
-              onClick={toSignUp}
-              className="text-primary hover:underline bg-transparent border-none p-0 cursor-pointer"
-            >
-              Sign up here
-            </button>
-          </p>
-        </View>
-      );
-    },
-  },
-  SignUp: {
-    FormFields() {
-      const { validationErrors } = useAuthenticator();
+// UI Components for Authenticator
+const AuthHeader = () => (
+  <View className="mt-4 mb-7">
+    <Heading level={3} className="!text-2xl !font-bold">
+      RENT
+      <span className="text-secondary-500 font-light hover:!text-primary-300">
+        IFUL
+      </span>
+    </Heading>
+    <p className="text-muted-foreground mt-2">
+      <span className="font-bold">Welcome!</span> Please sign in to continue
+    </p>
+  </View>
+);
 
-      return (
-        <>
-          <Authenticator.SignUp.FormFields />
-          <RadioGroupField
-            legend="Role"
-            name="custom:role"
-            errorMessage={validationErrors?.["custom:role"]}
-            hasError={!!validationErrors?.["custom:role"]}
-            isRequired
-          >
-            <Radio value="tenant">Tenant</Radio>
-            <Radio value="manager">Manager</Radio>
-          </RadioGroupField>
-        </>
-      );
-    },
+const SignInFooter = ({
+  handleAuthNavigation,
+}: {
+  handleAuthNavigation: (path: string, action: () => void) => void;
+}) => {
+  const { toSignUp } = useAuthenticator();
 
-    Footer() {
-      const { toSignIn } = useAuthenticator();
-      return (
-        <View className="text-center mt-4">
-          <p className="text-muted-foreground">
-            Already have an account?{" "}
-            <button
-              onClick={toSignIn}
-              className="text-primary hover:underline bg-transparent border-none p-0 cursor-pointer"
-            >
-              Sign in
-            </button>
-          </p>
-        </View>
-      );
-    },
-  },
+  return (
+    <View className="text-center mt-4">
+      <p className="text-muted-foreground">
+        Don&apos;t have an account?{" "}
+        <button
+          onClick={() => handleAuthNavigation("/signup", toSignUp)}
+          className="text-primary hover:underline bg-transparent border-none p-0 cursor-pointer"
+        >
+          Sign up here
+        </button>
+      </p>
+    </View>
+  );
 };
 
-const formFields = {
-  signIn: {
-    username: {
-      placeholder: "Enter your email",
-      label: "Email",
-      isRequired: true,
-    },
-    password: {
-      placeholder: "Enter your password",
-      label: "Password",
-      isRequired: true,
-    },
-  },
-  signUp: {
-    username: {
-      order: 1,
-      placeholder: "Choose a username",
-      label: "Username",
-      isRequired: true,
-    },
-    email: {
-      order: 2,
-      placeholder: "Enter your email address",
-      label: "Email",
-      isRequired: true,
-    },
-    password: {
-      order: 3,
-      placeholder: "Create a password",
-      label: "Password",
-      isRequired: true,
-    },
-    confirm_password: {
-      order: 4,
-      placeholder: "Confirm your password",
-      label: "Confirm Password",
-      isRequired: true,
-    },
-  },
+const SignUpFormFields = () => {
+  const { validationErrors } = useAuthenticator();
+
+  return (
+    <>
+      <Authenticator.SignUp.FormFields />
+      <RadioGroupField
+        legend="Role"
+        name="custom:role"
+        errorMessage={validationErrors?.["custom:role"]}
+        hasError={!!validationErrors?.["custom:role"]}
+        isRequired
+      >
+        <Radio value="tenant">Tenant</Radio>
+        <Radio value="manager">Manager</Radio>
+      </RadioGroupField>
+    </>
+  );
 };
+
+const SignUpFooter = ({
+  handleAuthNavigation,
+}: {
+  handleAuthNavigation: (path: string, action: () => void) => void;
+}) => {
+  const { toSignIn } = useAuthenticator();
+
+  return (
+    <View className="text-center mt-4">
+      <p className="text-muted-foreground">
+        Already have an account?{" "}
+        <button
+          onClick={() => handleAuthNavigation("/signin", toSignIn)}
+          className="text-primary hover:underline bg-transparent border-none p-0 cursor-pointer"
+        >
+          Sign in
+        </button>
+      </p>
+    </View>
+  );
+};
+
 const Auth = ({ children }: { children: React.ReactNode }) => {
   const { user } = useAuthenticator((context) => [context.user]);
   const router = useRouter();
   const pathName = usePathname();
+  const [initialAuthState, setInitialAuthState] = useState<"signIn" | "signUp">(
+    pathName.includes("signup") ? "signUp" : "signIn"
+  );
   const isAuthPage = /^\/(signin|signup)$/.test(pathName);
   const isDashboardPage =
     pathName.startsWith("/manager") || pathName.startsWith("/tenants");
@@ -152,15 +112,44 @@ const Auth = ({ children }: { children: React.ReactNode }) => {
     }
   }, [user, isAuthPage, router]);
 
+  useEffect(() => {
+    if (pathName.includes("signup") && initialAuthState !== "signUp") {
+      setInitialAuthState("signUp");
+    } else if (!pathName.includes("signup") && initialAuthState !== "signIn") {
+      setInitialAuthState("signIn");
+    }
+  }, [pathName, initialAuthState]);
+
+  const handleAuthNavigation = (path: string, authAction: () => void) => {
+    window.history.pushState(null, "", path);
+    setInitialAuthState(path.includes("signup") ? "signUp" : "signIn");
+    authAction();
+  };
+
+  const authComponents = {
+    Header: AuthHeader,
+    SignIn: {
+      Footer: () => (
+        <SignInFooter handleAuthNavigation={handleAuthNavigation} />
+      ),
+    },
+    SignUp: {
+      FormFields: SignUpFormFields,
+      Footer: () => (
+        <SignUpFooter handleAuthNavigation={handleAuthNavigation} />
+      ),
+    },
+  };
+
   if (!isAuthPage && !isDashboardPage) {
     return <>{children}</>;
   }
   return (
     <div className="h-full">
       <Authenticator
-        initialState={pathName.includes("signup") ? "signUp" : "signIn"}
-        components={components}
-        formFields={formFields}
+        initialState={initialAuthState}
+        components={authComponents}
+        formFields={authFormFields}
       >
         {() => <>{children}</>}
       </Authenticator>
