@@ -1,20 +1,23 @@
+"use client";
+
 import Navbar from "@/components/Navbar";
-import { Sidebar, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import Sidebar from "@/components/AppSidebar";
 import { NAVBAR_HEIGHT } from "@/lib/constants";
 import React from "react";
+import { useGetAuthUserQuery } from "@/state/api";
 
-export const DashboardLayout = ({
-  children,
-}: {
-  children: React.ReactNode;
-}) => {
+const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+  const { data: authUser } = useGetAuthUserQuery();
+
+  if (!authUser?.userRole) return null;
   return (
     <SidebarProvider>
       <div className="min-h-screen w-full bg-primary-100">
         <Navbar />
         <div style={{ paddingTop: `${NAVBAR_HEIGHT}px` }}>
           <main className="flex">
-            <Sidebar />
+            <Sidebar userType={authUser?.userRole.toLowerCase()} />
             <div className="flex-grow transition-all duration-300">
               {children}
             </div>
@@ -24,3 +27,4 @@ export const DashboardLayout = ({
     </SidebarProvider>
   );
 };
+export default DashboardLayout;

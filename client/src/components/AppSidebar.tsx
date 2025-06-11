@@ -19,7 +19,7 @@ import {
 import { NAVBAR_HEIGHT } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export const AppSidebar = ({ userType }: AppSidebarProps) => {
+const AppSidebar = ({ userType }: AppSidebarProps) => {
   const pathname = usePathname();
   const { toggleSidebar, open } = useSidebar();
   const navLinks =
@@ -110,3 +110,5 @@ export const AppSidebar = ({ userType }: AppSidebarProps) => {
     </Sidebar>
   );
 };
+
+export default AppSidebar;
