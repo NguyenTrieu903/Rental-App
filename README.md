@@ -10,3 +10,11 @@
 
 - if you have any database issues, or you change model you have to reset everything: `npx prisma migrate reset`
 - After reset, you should run `npm run seed` to load data from json to db
+
+#### Account tenant:
+
+- nguyentrieutptp@gmail.com - 12345678Ab!
+
+#### Account manager:
+
+- nguyentrieuporches@gmail.com - 12345678Ab!
