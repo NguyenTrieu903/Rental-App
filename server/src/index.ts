@@ -8,6 +8,7 @@ import { authMiddleware } from "./middleware/authMiddleware";
 /* ROUTE IMPORT */
 import tenantRoutes from "./routes/tenantRoutes";
 import managerRoutes from "./routes/managerRoutes";
+import propertyRoutes from "./routes/propertyRoutes";
 
 /*CONFIGURATION */
 dotenv.config();
@@ -21,6 +22,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 
 /* ROUTES */
+app.use("/properties", propertyRoutes);
 app.use("/tenants", authMiddleware(["tenant"]), tenantRoutes);
 app.use("/managers", authMiddleware(["manager"]), managerRoutes);
 
