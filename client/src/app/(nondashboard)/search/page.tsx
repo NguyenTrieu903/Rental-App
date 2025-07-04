@@ -5,11 +5,23 @@ import { useAppDispatch, useAppSelector } from "@/state/redux";
 import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import FiltersBar from "./FiltersBar";
+import FilterFull from "./FiltersFull";
 // import FiltersFull from "./FiltersFull";
 import { cleanParams } from "@/lib/utils";
 import { setFilters } from "@/state";
 // import Map from "./Map";
+import dynamic from "next/dynamic";
+// import Map from "./Map";
 // import Listings from "./Listings";
+
+const Map = dynamic(() => import("./Map"), {
+  ssr: false,
+  loading: () => (
+    <div className="h-[400px] w-full bg-gray-100 flex items-center justify-center">
+      Loading map...
+    </div>
+  ),
+});
 
 const SearchPage = () => {
   const searchParams = useSearchParams();
@@ -54,9 +66,9 @@ const SearchPage = () => {
               : "w-0 opacity-0 invisible"
           }`}
         >
-          {/* <FiltersFull /> */}
+          <FilterFull />
         </div>
-        {/* <Map /> */}
+        <Map />
         <div className="basis-4/12 overflow-y-auto">{/* <Listings /> */}</div>
       </div>
     </div>

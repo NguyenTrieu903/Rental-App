@@ -14,7 +14,7 @@ export const ViewModeToggle = () => {
       <Button
         variant="ghost"
         className={cn(
-          "rounded-none border-0",
+          "rounded-none border-0 cursor-pointer",
           viewMode === "grid" && "bg-secondary-600 text-primary-100"
         )}
         onClick={() => dispatch(setViewMode("grid"))}
@@ -24,7 +24,7 @@ export const ViewModeToggle = () => {
       <Button
         variant="ghost"
         className={cn(
-          "rounded-none border-0",
+          "rounded-none border-0 cursor-pointer",
           viewMode === "list" && "bg-secondary-600 text-primary-100"
         )}
         onClick={() => dispatch(setViewMode("list"))}

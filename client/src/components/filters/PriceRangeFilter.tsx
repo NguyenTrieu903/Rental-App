@@ -27,7 +27,9 @@ export const PriceRangeFilter = ({
       {/* Minimum Price Selector */}
       <Select
         value={priceRange[0]?.toString() || "any"}
-        onValueChange={(value) => onFilterChange("priceRange", value, true)}
+        onValueChange={(value) => {
+          onFilterChange("priceRange", value, true);
+        }}
       >
         <SelectTrigger className="w-auto rounded-xl border-primary-400">
           <SelectValue>{formatPriceValue(priceRange[0], true)}</SelectValue>
