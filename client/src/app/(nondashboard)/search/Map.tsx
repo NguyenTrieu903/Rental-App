@@ -38,53 +38,23 @@ const Map = () => {
   }, []);
 
   const coordinates = useAppSelector(
-    (state) => state.global.filters.coordinates
+    (state) => state.global.filters.coordinates || [34.05, -118.25]
   );
+
+  // Convert to [latitude, longitude] format for Leaflet
+  const mapPosition =
+    coordinates.length === 2
+      ? ([coordinates[1], coordinates[0]] as [number, number])
+      : ([34.05, -118.25] as [number, number]); // Default to LA
 
   const mapContainerRef = useRef(null);
   const filters = useAppSelector((state) => state.global.filters);
-  
-  // Lấy tất cả properties trước khi xác định vị trí mặc định
+
   const {
     data: properties,
     isLoading,
     isError,
   } = useGetPropertiesQuery(filters);
-  
-  // Xác định vị trí và zoom dựa trên filters hoặc tất cả properties
-  const [mapPosition, setMapPosition] = useState<[number, number]>([34.05, -118.25]);
-  const [mapZoom, setMapZoom] = useState<number>(13);
-  
-  // Cập nhật vị trí map dựa trên filters hoặc tất cả properties
-  useEffect(() => {
-    if (coordinates?.length === 2) {
-      // Nếu có tọa độ trong filter, sử dụng nó
-      setMapPosition([coordinates[1], coordinates[0]]);
-      setMapZoom(13);
-    } else if (properties?.length) {
-      // Nếu không có tọa độ filter nhưng có properties, tính toán bounds để hiển thị tất cả
-      try {
-        // Lấy tất cả tọa độ hợp lệ
-        const validLocations = properties
-          .filter(p => p.location?.coordinates?.latitude && p.location?.coordinates?.longitude)
-          .map(p => [p.location.coordinates.latitude, p.location.coordinates.longitude]);
-        
-        if (validLocations.length > 0) {
-          // Tính toán vị trí trung bình
-          const sumLat = validLocations.reduce((sum, loc) => sum + loc[0], 0);
-          const sumLng = validLocations.reduce((sum, loc) => sum + loc[1], 0);
-          const avgLat = sumLat / validLocations.length;
-          const avgLng = sumLng / validLocations.length;
-          
-          setMapPosition([avgLat, avgLng]);
-          setMapZoom(validLocations.length === 1 ? 13 : 10); // Zoom ra nếu có nhiều điểm
-        }
-      } catch (err) {
-        console.error("Error calculating map position:", err);
-        setMapPosition([34.05, -118.25]); // Fallback to default
-      }
-    }
-  }, [coordinates, properties]);
 
   // Custom icon cho properties
   const propertyIcon = new L.Icon({
@@ -101,10 +71,10 @@ const Map = () => {
   };
 
   return (
-    <div className="h-[500px] w-full">
+    <div className="h-full w-full">
       <MapContainer
         center={mapPosition}
-        zoom={mapZoom}
+        zoom={10}
         scrollWheelZoom={false}
         style={{ height: "100%", width: "100%" }}
       >
