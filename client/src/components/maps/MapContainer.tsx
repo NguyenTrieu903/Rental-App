@@ -33,6 +33,8 @@ const MapContainer = () => {
     isError,
   } = useGetPropertiesQuery(filters);
 
+  if (isLoading) return <>Loading...</>;
+  if (isError || !properties) return <div> Failed to fetch properties</div>;
   // handle marker click to navigate to property details
   const handleMarkerClick = (id: string) => {
     router.push(`/property/${id}`);
