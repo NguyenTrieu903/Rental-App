@@ -6,13 +6,10 @@ import { useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 import FiltersBar from "./FiltersBar";
 import FilterFull from "./FiltersFull";
-// import FiltersFull from "./FiltersFull";
 import { cleanParams } from "@/lib/utils";
 import { setFilters } from "@/state";
-// import Map from "./Map";
 import dynamic from "next/dynamic";
-// import Map from "./Map";
-// import Listings from "./Listings";
+import Listings from "./Listings";
 
 const Map = dynamic(() => import("./Map"), {
   ssr: false,
@@ -48,7 +45,7 @@ const SearchPage = () => {
 
     const cleanedFilters = cleanParams(initialFilters);
     dispatch(setFilters(cleanedFilters));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div
@@ -69,7 +66,9 @@ const SearchPage = () => {
           <FilterFull />
         </div>
         <Map />
-        <div className="basis-4/12 overflow-y-auto">{/* <Listings /> */}</div>
+        <div className="basis-4/12 overflow-y-auto">
+          <Listings />
+        </div>
       </div>
     </div>
   );
