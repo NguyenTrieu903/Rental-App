@@ -8,24 +8,10 @@ import { useAppSelector } from "@/state/redux";
 import { useGetPropertiesQuery } from "@/state/api/propertyApi";
 import { useRouter } from "next/navigation";
 
-// Component để cập nhật center của map khi filters thay đổi
-function MapUpdater({ position }: { position: [number, number] }) {
-  const map = useMap();
-
-  useEffect(() => {
-    map.setView(position);
-  }, [position, map]);
-
-  return null;
-}
-
-// Fix Leaflet icons
 const Map = () => {
   const router = useRouter();
 
-  // Fix for default markers not showing
   useEffect(() => {
-    // Fix icon issues when building with webpack
     delete (L.Icon.Default.prototype as any)._getIconUrl;
 
     L.Icon.Default.mergeOptions({
@@ -41,13 +27,11 @@ const Map = () => {
     (state) => state.global.filters.coordinates || [34.05, -118.25]
   );
 
-  // Convert to [latitude, longitude] format for Leaflet
   const mapPosition =
     coordinates.length === 2
       ? ([coordinates[1], coordinates[0]] as [number, number])
       : ([34.05, -118.25] as [number, number]); // Default to LA
 
-  const mapContainerRef = useRef(null);
   const filters = useAppSelector((state) => state.global.filters);
 
   const {
@@ -55,7 +39,7 @@ const Map = () => {
     isLoading,
     isError,
   } = useGetPropertiesQuery(filters);
-
+  console.log("Properties from DB:", properties);
   // Custom icon cho properties
   const propertyIcon = new L.Icon({
     iconUrl: "https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png", // Thay đổi thành icon tùy chỉnh nếu có
@@ -83,17 +67,7 @@ const Map = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Component để cập nhật center của map khi filters thay đổi */}
-        <MapUpdater position={mapPosition} />
-
-        {/* Marker cho vị trí hiện tại được chọn từ filter */}
-        <Marker position={mapPosition}>
-          <Popup>Selected location</Popup>
-        </Marker>
-
-        {/* Hiển thị tất cả properties từ DB */}
         {properties?.map((property) => {
-          // Kiểm tra xem property có dữ liệu location hợp lệ không
           if (
             property.location?.coordinates?.latitude &&
             property.location?.coordinates?.longitude
@@ -107,24 +81,70 @@ const Map = () => {
                 ]}
                 icon={propertyIcon}
                 eventHandlers={{
+                  mouseover: (e) => {
+                    e.target.openPopup();
+                  },
                   click: () => handleMarkerClick(property.id),
                 }}
               >
                 <Popup>
-                  <div className="flex flex-col gap-1">
-                    <h3 className="font-medium text-base">{property.title}</h3>
-                    <p className="text-primary-600 font-semibold">
-                      ${property.pricePerMonth}/tháng
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      {property.location.address}
-                    </p>
-                    <button
-                      className="bg-primary-500 text-white py-1 px-2 rounded-md text-xs mt-1"
-                      onClick={() => handleMarkerClick(property.id)}
-                    >
-                      Xem chi tiết
-                    </button>
+                  <div className="flex flex-col bg-white rounded-lg overflow-hidden shadow-md w-64">
+                    {/* Hình ảnh */}
+                    <div className="w-full h-32 bg-gray-200 overflow-hidden">
+                      {property.photoUrls && property.photoUrls[0] ? (
+                        <img
+                          src={property.photoUrls[0]}
+                          alt={property.name || "Property"}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-100 text-gray-400">
+                          No image
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Thông tin */}
+                    <div className="p-3">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-1 line-clamp-1 hover:text-primary-600">
+                        {property.name || "Property listing"}
+                      </h3>
+
+                      <div className="flex items-center mb-2">
+                        <span className="text-lg font-bold text-primary-600">
+                          ${property.pricePerMonth?.toLocaleString()}
+                        </span>
+                        <span className="text-sm text-gray-500 ml-1">
+                          / month
+                        </span>
+                      </div>
+
+                      <p className="text-sm text-gray-500 line-clamp-1 mb-3">
+                        {property.location?.address || "Address not available"}
+                      </p>
+
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          handleMarkerClick(property.id);
+                        }}
+                        className="w-full py-2 bg-secondary-600 hover:bg-secondary-700 text-white font-medium rounded transition-colors text-sm flex items-center justify-center cursor-pointer"
+                      >
+                        View details
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4 ml-1"
+                          viewBox="0 0 20 20"
+                          fill="currentColor"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </div>
                 </Popup>
               </Marker>
