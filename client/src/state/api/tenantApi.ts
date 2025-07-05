@@ -33,9 +33,6 @@ export const tenantApi = baseApi.injectEndpoints({
     }),
 
     // Mutation to remove a property from tenant's favorites
-    removeFavoriteProperty: build.mutation<
-      Tenant,
-      { cognitoId: string; propertyId: number }     
   }),
 });
 
