@@ -79,7 +79,41 @@ const FiltersBar = () => {
     dispatch(setFilters(newFilters));
     updateURL(newFilters);
   };
-  const handleLocationSearch = () => {};
+  const handleLocationSearch = async () => {
+    try {
+      const response = await fetch(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
+          searchInput
+        )}&limit=1`,
+        {
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "RentalApp/1.0",
+          },
+        }
+      );
+      const data = await response.json();
+      if (data && data.length > 0) {
+        const lon = parseFloat(data[0].lon);
+        const lat = parseFloat(data[0].lat);
+
+        dispatch(
+          setFilters({
+            location: searchInput,
+            coordinates: [lon, lat],
+          })
+        );
+
+        console.log(
+          `Location found: ${data[0].display_name}, coordinates: [${lon}, ${lat}]`
+        );
+      } else {
+        console.log("No location found for the search term");
+      }
+    } catch (err) {
+      console.error("Error search location:", err);
+    }
+  };
 
   return (
     <div className="flex justify-between items-center w-full py-5">
@@ -87,7 +121,7 @@ const FiltersBar = () => {
         <AllFiltersButton />
         <LocationSearch
           initialValue={filters.location}
-          onFilterChange={handleFilterChange}
+          onFilterChange={handleLocationSearch}
         />
         <div className="flex gap-1">
           <PriceRangeFilter

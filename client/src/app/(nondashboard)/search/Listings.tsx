@@ -49,8 +49,24 @@ const Listings = () => {
     }
   };
 
-  if (isLoading) return <>Loading...</>;
-  if (isError || !properties) return <div>Failed to fetch properties</div>;
+  if (isLoading) return (
+    <div className="h-full w-full flex items-center justify-center p-10">
+      <div className="text-primary-600 font-medium">Loading properties...</div>
+    </div>
+  );
+  
+  if (isError || !properties)
+    return (
+      <div className="h-full w-full flex flex-col items-center justify-center p-10">
+        <div className="text-red-500 font-medium mb-2">Failed to fetch properties</div>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+        >
+          Try Again
+        </button>
+      </div>
+    );
 
   return (
     <div className="w-full">

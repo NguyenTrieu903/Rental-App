@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import { configureLeafletIcons } from "./IconConfig";
 import MapUpdater from "./MapUpdater";
 import PropertyMarker from "./PropertyMarker";
+import NoPropertiesMessage from "./NoPropertiesMessage";
 
 const MapContainer = () => {
   const router = useRouter();
@@ -33,9 +34,28 @@ const MapContainer = () => {
     isError,
   } = useGetPropertiesQuery(filters);
 
-  if (isLoading) return <>Loading...</>;
-  if (isError || !properties) return <div> Failed to fetch properties</div>;
-  // handle marker click to navigate to property details
+  if (isLoading)
+    return (
+      <div className="h-full w-full bg-gray-100 flex items-center justify-center">
+        <div className="text-primary-600 font-medium">Loading map data...</div>
+      </div>
+    );
+
+  if (isError)
+    return (
+      <div className="h-full w-full bg-gray-100 flex flex-col items-center justify-center">
+        <div className="text-red-500 font-medium mb-2">
+          Failed to fetch properties
+        </div>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+
   const handleMarkerClick = (id: string) => {
     router.push(`/property/${id}`);
   };
@@ -53,17 +73,21 @@ const MapContainer = () => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {/* Update position */}
         <MapUpdater position={mapPosition} />
 
-        {/* Render properties */}
-        {properties?.map((property) => (
-          <PropertyMarker
-            key={property.id}
-            property={property}
-            onMarkerClick={handleMarkerClick}
-          />
-        ))}
+        {properties && properties.length === 0 && (
+          <NoPropertiesMessage message="No real estate found in this area" />
+        )}
+
+        {/* Render properties markers */}
+        {properties &&
+          properties.map((property) => (
+            <PropertyMarker
+              key={property.id}
+              property={property}
+              onMarkerClick={handleMarkerClick}
+            />
+          ))}
       </LeafletMapContainer>
     </div>
   );

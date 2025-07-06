@@ -37,9 +37,11 @@ export const propertyApi = baseApi.injectEndpoints({
             ]
           : [{ type: "Properties", id: "LIST" }],
       async onQueryStarted(_, { queryFulfilled }) {
-        await withToast(queryFulfilled, {
-          error: "Failed to fetch properties.",
-        });
+        try {
+          await queryFulfilled;
+        } catch (error) {
+          console.error("Error fetching properties:", error);
+        }
       },
     }),
   }),

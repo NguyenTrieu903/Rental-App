@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/select";
 import { formatPriceValue } from "@/lib/utils";
 import { FiltersState } from "@/state";
-import { FILLTER } from "@/utils/constant";
 
 interface PriceRangeFilterProps {
   priceRange: [number | null, number | null];
