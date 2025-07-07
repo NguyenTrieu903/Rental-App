@@ -34,7 +34,7 @@ export const getProperties = async (
     if (favoriteIds) {
       const favoriteIdsArray = (favoriteIds as string).split(",").map(Number);
       whereConditions.push(
-        Prisma.sql`p.id IN (${Prisma.join(favoriteIdsArray)})`
+        Prisma.sql`p."id" IN (${Prisma.join(favoriteIdsArray)})`
       );
     }
 
@@ -51,22 +51,22 @@ export const getProperties = async (
     }
 
     if (beds && beds !== "any") {
-      whereConditions.push(Prisma.sql`p.beds >= ${Number(beds)}`);
+      whereConditions.push(Prisma.sql`p."beds" >= ${Number(beds)}`);
     }
 
     if (baths && baths !== "any") {
-      whereConditions.push(Prisma.sql`p.baths >= ${Number(baths)}`);
+      whereConditions.push(Prisma.sql`p."baths" >= ${Number(baths)}`);
     }
 
     if (squareFeetMin) {
       whereConditions.push(
-        Prisma.sql`p.squareFeet >= ${Number(squareFeetMin)}`
+        Prisma.sql`p."squareFeet" >= ${Number(squareFeetMin)}`
       );
     }
 
     if (squareFeetMax) {
       whereConditions.push(
-        Prisma.sql`p.squareFeet <= ${Number(squareFeetMax)}`
+        Prisma.sql`p."squareFeet" <= ${Number(squareFeetMax)}`
       );
     }
 
@@ -78,7 +78,13 @@ export const getProperties = async (
 
     if (amenities && amenities !== "any") {
       const amenitiesArray = (amenities as string).split(",");
-      whereConditions.push(Prisma.sql`p.amenities @> ${amenitiesArray}`);
+      console.log("Amenities Array:", amenitiesArray);
+      // Ép kiểu mỗi giá trị trong mảng thành enum "Amenity" trước khi sử dụng với toán tử @>
+      whereConditions.push(
+        Prisma.sql`p."amenities" @> array[${Prisma.join(
+          amenitiesArray.map((amenity) => Prisma.sql`${amenity}::"Amenity"`)
+        )}]`
+      );
     }
 
     if (availableFrom && availableFrom !== "any") {
@@ -106,7 +112,7 @@ export const getProperties = async (
 
       whereConditions.push(
         Prisma.sql`ST_DWithin(
-          l.coordinates::geometry,
+          l."coordinates"::geometry,
           ST_SetSRID(ST_MakePoint(${lng}, ${lat}), 4326),
           ${degrees}
         )`
@@ -162,7 +168,7 @@ export const getProperty = async (
 
     if (property) {
       const coordinates: { coordinates: string }[] =
-        await prisma.$queryRaw`SELECT ST_asText(coordinates) as coordinates FROM "Location" WHERE id = ${property.location.id}`;
+        await prisma.$queryRaw`SELECT ST_asText("coordinates") as coordinates FROM "Location" WHERE "id" = ${property.location.id}`;
       const geoJSON: any = wktToGeoJSON(coordinates[0]?.coordinates || "");
       const longitude = geoJSON.coordinates[0];
       const latitude = geoJSON.coordinates[1];

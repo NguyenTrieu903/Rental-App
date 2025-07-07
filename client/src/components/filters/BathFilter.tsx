@@ -5,9 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { formatPriceValue } from "@/lib/utils";
 import { FiltersState } from "@/state";
-import { FILLTER } from "@/utils/constant";
 
 interface BathFilterProps {
   baths: string;

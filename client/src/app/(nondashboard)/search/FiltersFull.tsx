@@ -40,7 +40,10 @@ const FiltersFull = () => {
       );
     });
 
-    router.push(`${pathname}?${updatedSearchParams.toString()}`);
+    // Sử dụng router.replace thay vì router.push và thêm { scroll: false } để tránh tải lại trang
+    router.replace(`${pathname}?${updatedSearchParams.toString()}`, {
+      scroll: false,
+    });
   });
 
   const handleSubmit = () => {
@@ -66,19 +69,31 @@ const FiltersFull = () => {
   const handleLocationSearch = async () => {
     try {
       const response = await fetch(
-        `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
+        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
           localFilters.location
-        )}.json?access_token=${
-          process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN
-        }&fuzzyMatch=true`
+        )}&limit=1`,
+        {
+          headers: {
+            Accept: "application/json",
+            "User-Agent": "RentalApp/1.0", // Nominatim yêu cầu user-agent
+          },
+        }
       );
       const data = await response.json();
-      if (data.features && data.features.length > 0) {
-        const [lng, lat] = data.features[0].center;
+      if (data && data.length > 0) {
+        const lon = parseFloat(data[0].lon);
+        const lat = parseFloat(data[0].lat);
+
         setLocalFilters((prev) => ({
           ...prev,
-          coordinates: [lng, lat],
+          coordinates: [lon, lat],
         }));
+
+        console.log(
+          `Location found filterFull: ${data[0].display_name}, coordinates: [${lon}, ${lat}]`
+        );
+      } else {
+        console.log("No location found for the search term");
       }
     } catch (err) {
       console.error("Error search location:", err);
