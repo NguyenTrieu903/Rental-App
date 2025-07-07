@@ -57,7 +57,7 @@ const MapContainer = () => {
     );
 
   const handleMarkerClick = (id: string) => {
-    router.push(`/property/${id}`);
+    router.push(`/search/${id}`);
   };
 
   return (

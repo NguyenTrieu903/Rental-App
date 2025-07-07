@@ -1,46 +1,24 @@
 import {
-  FiltersState,
-  setFilters,
-  setViewMode,
-  toggleFiltersFullOpen,
-} from "@/state";
-import { useAppSelector } from "@/state/redux";
-import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { debounce } from "lodash";
-import { cleanParams, cn, formatPriceValue } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Bed, Filter, Grid, List, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { PropertyTypeIcons } from "@/lib/constants";
-import { FILLTER } from "@/utils/constant";
-import {
   AllFiltersButton,
+  BathFilter,
+  BedFilter,
   LocationSearch,
   PriceRangeFilter,
   ViewModeToggle,
-  BedFilter,
-  BathFilter,
 } from "@/components/filters";
 import { PropertyTypeFilter } from "@/components/filters/PropertyTypeFilter";
+import { cleanParams } from "@/lib/utils";
+import { FiltersState, setFilters } from "@/state";
+import { useAppSelector } from "@/state/redux";
+import { FILLTER } from "@/utils/constant";
+import { debounce } from "lodash";
+import { usePathname, useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 const FiltersBar = () => {
   const dispatch = useDispatch();
   const router = useRouter();
   const pathName = usePathname();
   const filters = useAppSelector((state) => state.global.filters);
-  const isFiltersFullOpen = useAppSelector(
-    (state) => state.global.isFiltersFullOpen
-  );
-  const viewMode = useAppSelector((state) => state.global.viewMode);
-  const [searchInput, setSearchInput] = useState(filters.location);
 
   const updateURL = debounce((newFilters: FiltersState) => {
     const cleanFilters = cleanParams(newFilters);
@@ -79,11 +57,12 @@ const FiltersBar = () => {
     dispatch(setFilters(newFilters));
     updateURL(newFilters);
   };
-  const handleLocationSearch = async () => {
+  const handleLocationSearch = async (location: any) => {
     try {
+      console.log("Searching location:", location);
       const response = await fetch(
         `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-          searchInput
+          location
         )}&limit=1`,
         {
           headers: {
@@ -99,7 +78,7 @@ const FiltersBar = () => {
 
         dispatch(
           setFilters({
-            location: searchInput,
+            location: location,
             coordinates: [lon, lat],
           })
         );

@@ -90,7 +90,7 @@ const FiltersFull = () => {
         }));
 
         console.log(
-          `Location found: ${data[0].display_name}, coordinates: [${lon}, ${lat}]`
+          `Location found filterFull: ${data[0].display_name}, coordinates: [${lon}, ${lat}]`
         );
       } else {
         console.log("No location found for the search term");

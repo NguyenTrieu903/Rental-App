@@ -7,11 +7,7 @@ import { useDispatch } from "react-redux";
 
 interface LocationSearchProps {
   initialValue: string;
-  onFilterChange: (
-    key: keyof FiltersState,
-    value: any,
-    isMin: boolean | null
-  ) => void;
+  onFilterChange: (value: any) => void;
 }
 
 export const LocationSearch = ({
@@ -22,7 +18,7 @@ export const LocationSearch = ({
   const dispatch = useDispatch();
 
   const handleLocationSearch = () => {
-    onFilterChange("location", searchInput, null);
+    onFilterChange(searchInput);
   };
 
   return (
