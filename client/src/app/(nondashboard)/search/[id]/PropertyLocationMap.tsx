@@ -18,9 +18,7 @@ const PropertyLocationMap: React.FC<PropertyLocationMapProps> = ({
   address,
   propertyName,
 }) => {
-  // Cấu hình icon cho Leaflet khi component mount
   useEffect(() => {
-    // Fix icon issues when building with webpack
     delete (L.Icon.Default.prototype as any)._getIconUrl;
 
     L.Icon.Default.mergeOptions({
