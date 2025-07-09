@@ -4,12 +4,8 @@ import Card from "@/components/Card";
 import Header from "@/components/Header";
 import Loading from "@/components/Loading";
 import { useGetAuthUserQuery } from "@/state/api/authApi";
-import {
-  useGetPropertyQuery,
-  useGetPropertiesQuery,
-} from "@/state/api/propertyApi";
+import { useGetPropertiesQuery } from "@/state/api/propertyApi";
 import { useGetTenantQuery } from "@/state/api/tenantApi";
-import React from "react";
 
 const Favorites = () => {
   const { data: authUser } = useGetAuthUserQuery();

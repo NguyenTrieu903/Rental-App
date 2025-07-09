@@ -14,6 +14,7 @@ export const leasesApi = baseApi.injectEndpoints({
       },
     }),
 
+    // get all leases for a property
     getPropertyLeases: build.query<Lease[], number>({
       query: (propertyId) => `properties/${propertyId}/leases`,
       providesTags: ["Leases"],
@@ -23,7 +24,7 @@ export const leasesApi = baseApi.injectEndpoints({
         });
       },
     }),
-
+    // get all payments for a lease
     getPayments: build.query<Payment[], number>({
       query: (leaseId) => `leases/${leaseId}/payments`,
       providesTags: ["Payments"],
