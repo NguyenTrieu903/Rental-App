@@ -8,3 +8,9 @@ export const APPLICATION_STATUS = {
   APPROVED: "APPROVED",
   REJECTED: "REJECTED",
 };
+
+export const ROLES = {
+  TENANT: "tenant",
+  MANAGER: "manager",
+  ADMIN: "admin",
+};
