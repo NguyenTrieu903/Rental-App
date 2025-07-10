@@ -72,7 +72,7 @@ const Navbar = () => {
                 onClick={() => {
                   router.push(
                     authUser.userRole?.toLowerCase() === "manager"
-                      ? "/managers/property/create"
+                      ? "/managers/properties/create"
                       : "/search"
                   );
                 }}
