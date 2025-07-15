@@ -20,6 +20,8 @@ export const baseApi = createApi({
     "Properties",
     "PropertyDetails",
     "Applications",
+    "Leases",
+    "Payments",
   ],
   endpoints: () => ({}),
 });

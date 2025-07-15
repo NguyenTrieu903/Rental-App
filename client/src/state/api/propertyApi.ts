@@ -6,7 +6,7 @@ import { cleanParams, withToast } from "@/lib/utils";
 
 export const propertyApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    // update manager settings
+    // query to get properties
     getProperties: build.query<
       Property[],
       Partial<FiltersState> & { favoriteIds?: number[] }
@@ -44,6 +44,7 @@ export const propertyApi = baseApi.injectEndpoints({
         }
       },
     }),
+    // get property details by ID
     getProperty: build.query<Property, number>({
       query: (id) => `properties/${id}`,
       providesTags: (result, error, id) => [{ type: "PropertyDetails", id }],
@@ -53,7 +54,24 @@ export const propertyApi = baseApi.injectEndpoints({
         });
       },
     }),
+
+    // create a new property
+    createProperty: build.mutation<Property, FormData>({
+      query: (newProperty) => ({
+        url: `properties`,
+        method: "POST",
+        body: newProperty,
+      }),
+      invalidatesTags: (result) => [
+        { type: "Properties", id: "LIST" },
+        { type: "Managers", id: result?.manager?.id },
+      ],
+    }),
   }),
 });
 
-export const { useGetPropertiesQuery, useGetPropertyQuery } = propertyApi;
+export const {
+  useGetPropertiesQuery,
+  useGetPropertyQuery,
+  useCreatePropertyMutation,
+} = propertyApi;
