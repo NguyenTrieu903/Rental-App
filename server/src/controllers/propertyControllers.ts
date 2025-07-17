@@ -118,7 +118,7 @@ export const getProperties = async (
         )`
       );
     }
-
+    console.log("whereConditions:", whereConditions);
     const completeQuery = Prisma.sql`
       SELECT 
         p.*,
@@ -142,7 +142,14 @@ export const getProperties = async (
           : Prisma.empty
       }
     `;
-
+    console.log("Complete Query SQL:", completeQuery.strings.join("?"));
+    console.log("Query Parameters:", completeQuery.values);
+    let sqlWithValues = completeQuery.strings[0];
+    completeQuery.values.forEach((value, i) => {
+      sqlWithValues +=
+        JSON.stringify(value) + (completeQuery.strings[i + 1] || "");
+    });
+    console.log("Query with values:", sqlWithValues);
     const properties = await prisma.$queryRaw(completeQuery);
 
     res.json(properties);
