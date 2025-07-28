@@ -1,7 +1,7 @@
 import { FiltersState, initialState, setFilters } from "@/state";
 import { useAppSelector } from "@/state/redux";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { debounce } from "lodash";
 import { cleanParams, cn, formatEnumString } from "@/lib/utils";
@@ -28,7 +28,9 @@ const FiltersFull = () => {
   const isFiltersFullOpen = useAppSelector(
     (state) => state.global.isFiltersFullOpen
   );
-
+  useEffect(() => {
+    setLocalFilters(filters);
+  }, [filters, isFiltersFullOpen]);
   const updateURL = debounce((newFilters: FiltersState) => {
     const cleanFilters = cleanParams(newFilters);
     const updatedSearchParams = new URLSearchParams();
@@ -111,7 +113,7 @@ const FiltersFull = () => {
           <div className="flex items-center">
             <Input
               placeholder="Enter location"
-              value={filters.location}
+              value={localFilters.location}
               onChange={(e) =>
                 setLocalFilters((prev) => ({
                   ...prev,
@@ -296,14 +298,14 @@ const FiltersFull = () => {
         <div className="flex gap-4 mt-6">
           <Button
             onClick={handleSubmit}
-            className="flex-1 bg-primary-700 text-white rounded-xl cursor-pointer"
+            className="flex-1 bg-primary-700 text-white rounded-xl"
           >
             APPLY
           </Button>
           <Button
             onClick={handleReset}
             variant="outline"
-            className="flex-1 rounded-xl cursor-pointer"
+            className="flex-1 rounded-xl"
           >
             Reset Filters
           </Button>
